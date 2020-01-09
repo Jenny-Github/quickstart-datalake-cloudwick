@@ -829,7 +829,7 @@
                     },
                     "S3Key": "lambdas/writetoESX.zip"
                 },
-                "Runtime": "python2.7",
+                "Runtime": "python3.7",
                 "Timeout": "180"
             }
         },
@@ -2541,7 +2541,7 @@
                     }
                 },
                 "Handler": "index.handler",
-                "Runtime": "python2.7",
+                "Runtime": "python3.7",
                 "Timeout": "30",
                 "Role": {
                     "Fn::GetAtt": [
