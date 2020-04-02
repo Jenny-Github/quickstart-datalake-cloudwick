@@ -1,0 +1,33 @@
+project:
+  name: quickstart-datalake-cloudwick
+  owner: sshvans@amazon.com
+  package_lambda: false
+  regions:
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-south-1
+  - ap-southeast-1
+  - ap-southeast-2
+  - ca-central-1
+  - eu-central-1
+  - eu-west-1
+  - sa-east-1
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  s3_bucket: ''
+tests:
+  quickstart-data-lake-cloudwickt1:
+    parameters:
+      AccessCIDR: 10.0.0.0/0
+      AdministratorEmail: abc@example.com
+      AvailabilityZones: $[taskcat_genaz_2]
+      KeyPairName: taskcat-test
+      RDSPassword: $[taskcat_genpass_8]
+    regions:
+    - us-east-1
+    - us-west-2
+    - eu-west-1
+    s3_bucket: ''
+    template: templates/datalake-master.template.yaml

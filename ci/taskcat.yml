@@ -21,7 +21,7 @@ global:
 tests:
   quickstart-data-lake-cloudwickt1:
     parameter_input: qs-datalake-defaults.json
-    template_file: datalake-master.template
+    template_file: datalake-master.template.yaml
     regions:
     - us-east-1
     - us-west-2
