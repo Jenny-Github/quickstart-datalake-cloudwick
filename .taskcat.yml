@@ -25,6 +25,8 @@ tests:
       AvailabilityZones: $[taskcat_genaz_2]
       KeyPairName: taskcat-test
       RDSPassword: $[taskcat_genpass_8]
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
     regions:
     - us-east-1
     - us-west-2

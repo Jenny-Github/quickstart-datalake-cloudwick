@@ -132,17 +132,13 @@ Parameters:
     Type: Number
   NodeType:
     AllowedValues:
-      - dc1.large
-      - dc1.8xlarge
       - dc2.large
       - dc2.8xlarge
-      - ds1.xlarge
-      - ds1.8xlarge
       - ds2.xlarge
       - ds2.8xlarge
       - ra3.16xlarge
     ConstraintDescription: must select a valid Redshift node type.
-    Default: dc1.large
+    Default: dc2.large
     Description: Redshift node type
     Type: String
   NumberOfNodes:
@@ -171,6 +167,10 @@ Parameters:
       name can include numbers, lowercase letters, uppercase letters, and hyphens
       (-). It cannot start or end with a hyphen (-).
     Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
+    Type: String
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
     ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
@@ -193,6 +193,7 @@ Parameters:
     Description: Security Groups for data lake web server
     Type: String
 Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
   IsMultiNodeCluster: !Equals
     - !Ref 'ClusterType'
     - multi-node
@@ -1250,25 +1251,41 @@ Resources:
         Fileset:
           files:
             /etc/yum.repos.d/dlpackages.repo:
-              source: !Sub 'https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}scripts/repo/dlpackages.repo'
+              source:
+                !Sub
+                  - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}scripts/repo/dlpackages.repo'
+                  - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                    S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
               mode: '000644'
               owner: root
               group: root
               authentication: S3AccessCreds
             /home/ec2-user/configure.sh:
-              source: !Sub 'https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}scripts/configure.sh'
+              source:
+                !Sub
+                  - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}scripts/configure.sh'
+                  - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                    S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
               mode: '000644'
               owner: root
               group: root
               authentication: S3AccessCreds
             /home/ec2-user/writetoES.zip:
-              source: !Sub 'https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}scripts/lambdas/writetoES.zip'
+              source:
+                !Sub
+                  - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}scripts/lambdas/writetoES.zip'
+                  - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                    S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
               mode: '000644'
               owner: root
               group: root
               authentication: S3AccessCreds
             /home/ec2-user/datalake.zip:
-              source: !Sub 'https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}scripts/web/datalake.zip'
+              source:
+                !Sub
+                  - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}scripts/web/datalake.zip'
+                  - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                    S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
               mode: '000644'
               owner: root
               group: root
@@ -1353,6 +1370,9 @@ Resources:
                   - "\n"
                   - QSS3BucketName|
                   - !Ref 'QSS3BucketName'
+                  - "\n"
+                  - QSS3BucketRegion|
+                  - !Ref 'QSS3BucketRegion'
                   - "\n"
                   - QSS3KeyPrefix|
                   - !Ref 'QSS3KeyPrefix'
